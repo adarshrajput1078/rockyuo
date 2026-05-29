@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mr$SPONZIFY | Premium Asset Network</title>
+    
+    <!-- External Frameworks -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        :root {
+            --brand-gold: #C5A059;
+            --brand-gold-dark: #8A6B32;
+            --brand-gold-gradient: linear-gradient(135deg, #E8D399 0%, #C5A059 50%, #8A6B32 100%);
+            --bg-main: #050505;
+            --bg-card: #0F0F0F;
+            --glass-border: rgba(197, 160, 89, 0.15);
+            --text-gold: #C5A059;
+            --font-royal: 'Cinzel', serif;
+            --font-body: 'Inter', sans-serif;
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { background-color: var(--bg-main); color: #FFF; font-family: var(--font-body); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: var(--brand-gold-dark); border-radius: 10px; }
+
+        /* Global Classes */
+        .royal-text { font-family: var(--font-royal); }
+        .text-gradient { background: var(--brand-gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .border-gold { border: 1px solid var(--glass-border); }
+        
+        /* Ambient Effects */
+        .ambient-glow { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;
+            background: radial-gradient(circle at 10% 10%, rgba(197, 160, 89, 0.05) 0%, transparent 50%),
+                        radial-gradient(circle at 90% 90%, rgba(197, 160, 89, 0.03) 0%, transparent 50%);
+        }
+
+        /* Hero Animations */
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in-up { animation: fadeInUp 1s forwards; }
+
+        /* Navigation */
+        header { position: sticky; top: 0; z-index: 1000; background: rgba(5, 5, 5, 0.8); backdrop-filter: blur(15px); border-bottom: 1px solid var(--glass-border); transition: var(--transition); }
+        .nav-link { color: #BBB; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; position: relative; }
+        .nav-link:hover { color: var(--brand-gold); }
+        .nav-link::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 0; height: 1px; background: var(--brand-gold); transition: 0.3s; }
+        .nav-link:hover::after { width: 100%; }
+
+        /* Ticker */
+        .ticker-bar { background: var(--brand-gold-dark); color: #000; padding: 6px 0; overflow: hidden; font-weight: 800; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; }
+        .ticker-move { display: inline-block; white-space: nowrap; padding-right: 100%; animation: tickerScroll 40s linear infinite; }
+        @keyframes tickerScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
+
+        /* Plans Section */
+        .tab-btn { background: var(--bg-card); border: 1px solid var(--glass-border); color: #888; padding: 12px 30px; border-radius: 4px; font-family: var(--font-royal); font-weight: 700; transition: 0.3s; }
+        .tab-btn.active { background: var(--brand-gold-gradient); color: #000; border-color: var(--brand-gold); }
+        
+        .plan-card { background: linear-gradient(180deg, #121212 0%, #080808 100%); border: 1px solid var(--glass-border); border-radius: 8px; padding: 40px 30px; transition: var(--transition); text-align: center; position: relative; overflow: hidden; }
+        .plan-card:hover { transform: translateY(-10px); border-color: var(--brand-gold); box-shadow: 0 15px 40px rgba(0,0,0,0.8); }
+        .plan-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: var(--brand-gold-gradient); transform: scaleX(0); transition: 0.4s; }
+        .plan-card:hover::before { transform: scaleX(1); }
+
+        /* FAQ */
+        .faq-item { background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: 6px; margin-bottom: 15px; overflow: hidden; }
+        .faq-head { padding: 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .faq-body { max-height: 0; padding: 0 20px; overflow: hidden; transition: 0.3s ease; color: #AAA; }
+        .faq-item.active .faq-body { max-height: 200px; padding-bottom: 20px; }
+
+        /* Footer */
+        footer { background: #000; padding: 80px 0 30px; border-top: 1px solid rgba(197, 160, 89, 0.1); }
+        .footer-logo { font-family: var(--font-royal); font-size: 2rem; }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-glow"></div>
+
+    <!-- Ticker -->
+    <div class="ticker-bar">
+        <div class="ticker-move" id="dyn-ticker">SYSTEM INITIALIZING... FETCHING LIVE ASSET DATA...</div>
+    </div>
+
+    <!-- Header -->
+    <header id="main-nav">
+        <div class="container mx-auto px-5 py-4 flex justify-between items-center">
+            <div>
+                <h1 id="dyn-logo-name" class="royal-text text-2xl font-black text-gradient">Mr$SPONZIFY</h1>
+                <p id="dyn-logo-sub" class="text-[10px] tracking-[4px] text-gray-500 uppercase">— NETWORK —</p>
+            </div>
+            <nav class="hidden md:flex gap-10">
+                <a href="#home" class="nav-link">Home</a>
+                <a href="#about" class="nav-link">Legacy</a>
+                <a href="#rates" class="nav-link">Rates</a>
+                <a href="#faq" class="nav-link">FAQ</a>
+                <a href="#contact" class="nav-link">Contact</a>
+            </nav>
+            <button onclick="document.getElementById('contact').scrollIntoView()" class="hidden md:block bg-transparent border border-yellow-600/50 px-6 py-2 text-xs font-bold royal-text text-gold uppercase hover:bg-yellow-600/10 transition">Connect</button>
+            <button class="md:hidden text-gold text-2xl"><i class="fa-solid fa-bars"></i></button>
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <section id="home" class="min-h-[80vh] flex items-center justify-center text-center px-5">
+        <div class="max-w-4xl fade-in-up">
+            <span class="text-xs tracking-[5px] text-gray-500 uppercase mb-5 block">ESTABLISHED BY FAYYAZ RAJPUT</span>
+            <h1 id="dyn-hero-heading" class="royal-text text-5xl md:text-7xl font-bold leading-tight mb-8">
+                <span class="text-gradient">Premium Asset</span><br>Brokerage Hub
+            </h1>
+            <p id="dyn-hero-sub" class="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto mb-12 font-light leading-relaxed">
+                Securely integrating elite LinkedIn assets into professional corporate nodes for verified global suppliers.
+            </p>
+            <div class="flex flex-wrap justify-center gap-6">
+                <button onclick="document.getElementById('rates').scrollIntoView()" class="px-10 py-4 bg-yellow-600 text-black font-bold royal-text tracking-widest hover:scale-105 transition">Explore Rates</button>
+                <button onclick="document.getElementById('about').scrollIntoView()" class="px-10 py-4 border border-yellow-600 text-gold font-bold royal-text tracking-widest hover:bg-yellow-600/10 transition">Our History</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Counter -->
+    <section class="py-20 border-y border-white/5">
+        <div class="container mx-auto px-5 grid grid-cols-2 md:grid-cols-4 gap-10 text-center">
+            <div><h3 class="text-4xl font-bold royal-text text-gradient">99.9%</h3><p class="text-[10px] text-gray-500 uppercase tracking-widest mt-2">Placement Rate</p></div>
+            <div><h3 class="text-4xl font-bold royal-text text-gradient">24/7</h3><p class="text-[10px] text-gray-500 uppercase tracking-widest mt-2">Node Uptime</p></div>
+            <div><h3 class="text-4xl font-bold royal-text text-gradient">$500k+</h3><p class="text-[10px] text-gray-500 uppercase tracking-widest mt-2">Annual Payouts</p></div>
+            <div><h3 class="text-4xl font-bold royal-text text-gradient">Verified</h3><p class="text-[10px] text-gray-500 uppercase tracking-widest mt-2">Encrypted Nodes</p></div>
+        </div>
+    </section>
+
+    <!-- About -->
+    <section id="about" class="py-32 bg-[#080808]">
+        <div class="container mx-auto px-5 grid md:grid-cols-2 gap-20 items-center">
+            <div class="relative">
+                <div class="absolute -top-10 -left-10 w-40 h-40 border-l-2 border-t-2 border-yellow-600/30"></div>
+                <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800" class="rounded shadow-2xl grayscale hover:grayscale-0 transition duration-1000" alt="Corporate Assets">
+            </div>
+            <div>
+                <h2 class="royal-text text-4xl text-gold mb-10">中国专业房地产经纪人</h2>
+                <div id="dyn-about-text" class="space-y-6 text-gray-400 text-lg leading-relaxed font-light">
+                    <p>Loading historical data and network information from the administrative core...</p>
+                </div>
+                <div class="mt-12 flex gap-4">
+                    <i class="fa-solid fa-award text-3xl text-yellow-600"></i>
+                    <div><h4 class="royal-text font-bold">Premier Excellence</h4><p class="text-sm text-gray-500">Rated #1 in Premium Asset Management 2025.</p></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Rates -->
+    <section id="rates" class="py-32">
+        <div class="container mx-auto px-5">
+            <div class="text-center mb-16">
+                <h2 class="royal-text text-4xl mb-4">Market Rates</h2>
+                <div class="w-20 h-1 bg-yellow-600 mx-auto"></div>
+            </div>
+
+            <div id="dynamic-tabs" class="flex flex-wrap justify-center gap-4 mb-16"></div>
+            <div id="dynamic-plans-container" class="grid md:grid-cols-3 gap-8">
+                <div class="col-span-full text-center text-gray-600 py-10 font-royal">SYNCING WITH DATABASE...</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="py-32 bg-[#080808]">
+        <div class="container mx-auto px-5 max-w-3xl">
+            <h2 class="royal-text text-4xl text-center mb-16">Intelligence Base</h2>
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-head"><span class="royal-text font-bold">Is the integration 100% secure?</span><i class="fa-solid fa-plus text-xs"></i></div>
+                <div class="faq-body">Yes. We use advanced proxy nodes and hardware identification masking to ensure that every asset deployed remains invisible to detection systems.</div>
+            </div>
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-head"><span class="royal-text font-bold">What is the payout structure?</span><i class="fa-solid fa-plus text-xs"></i></div>
+                <div class="faq-body">Payouts are calculated dynamically based on node usage. All processed earnings are settled within 24-48 hours via the administrative desk.</div>
+            </div>
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-head"><span class="royal-text font-bold">How are rates determined?</span><i class="fa-solid fa-plus text-xs"></i></div>
+                <div class="faq-body">Rates are driven by market demand for connection limits and account age. Older accounts with higher connection metrics command premium yield.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact CTA -->
+    <section id="contact" class="py-32 border-t border-white/5">
+        <div class="container mx-auto px-5 text-center">
+            <h2 class="royal-text text-5xl font-bold mb-8">Join The Syndicate</h2>
+            <p class="text-gray-400 max-w-xl mx-auto mb-12">Connect with our administrative elite to begin your asset deployment journey today.</p>
+            <button onclick="openContact()" class="px-12 py-5 bg-gradient-to-r from-yellow-600 to-yellow-800 text-black font-black royal-text tracking-[3px] hover:scale-110 transition shadow-2xl">
+                <i class="fa-brands fa-whatsapp mr-2 text-xl"></i> START CONSULTATION
+            </button>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container mx-auto px-5">
+            <div class="grid md:grid-cols-3 gap-20 mb-20">
+                <div>
+                    <h2 class="footer-logo royal-text text-gradient font-bold mb-6">Mr$SPONZIFY</h2>
+                    <p class="text-gray-500 font-light leading-relaxed">The pinnacle of asset network management. Global nodes, encrypted handling, and elite brokerage services.</p>
+                </div>
+                <div>
+                    <h4 class="royal-text text-gold mb-6 uppercase tracking-widest">Navigation</h4>
+                    <ul class="space-y-4 text-gray-500 text-sm">
+                        <li><a href="#home" class="hover:text-white transition">Core Dashboard</a></li>
+                        <li><a href="#about" class="hover:text-white transition">Network Heritage</a></li>
+                        <li><a href="#rates" class="hover:text-white transition">Current Market Value</a></li>
+                        <li><a href="#contact" class="hover:text-white transition">System Support</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="royal-text text-gold mb-6 uppercase tracking-widest">Social Network</h4>
+                    <div class="flex gap-6">
+                        <a href="#" class="w-10 h-10 border border-white/10 flex items-center justify-center rounded-full hover:border-gold transition"><i class="fa-brands fa-telegram-plane"></i></a>
+                        <a href="#" class="w-10 h-10 border border-white/10 flex items-center justify-center rounded-full hover:border-gold transition"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#" class="w-10 h-10 border border-white/10 flex items-center justify-center rounded-full hover:border-gold transition"><i class="fa-brands fa-whatsapp"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="pt-10 border-t border-white/5 flex flex-col items-center text-center gap-4">
+                <p class="text-gray-600 text-xs">&copy; 2025 Mr$SPONZIFY NETWORK. OWNED BY FAYYAZ RAJPUT. ALL RIGHTS RESERVED.</p>
+                <div class="text-gray-400 text-sm">
+                    Made by 
+                    <a href="https://chat.whatsapp.com/K1JrZGx6PeO7mf4NHhmUnx" target="_blank" 
+                       class="text-gold font-black royal-text hover:text-white transition tracking-widest">
+                       THE RR GROUP
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Firebase Logic with SaaS License System -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyD1VVoH04Fv_reDEJbOiyQKOqgwOMKU0Lc",
+            authDomain: "llrental.firebaseapp.com",
+            databaseURL: "https://llrental-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "llrental",
+            storageBucket: "llrental.firebasestorage.app",
+            messagingSenderId: "1089848095257",
+            appId: "1:1089848095257:web:97423bcf81b8c12488f088"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        let supportNum = "";
+
+        // ==========================================
+        // 🚨 MASTER SaaS LICENSE CHECK (THE KILL SWITCH) 🚨
+        // ==========================================
+        onValue(ref(db, 'cms/license'), (snapshot) => {
+            const license = snapshot.val();
+            if (license && license.status === 'suspended') {
+                // Completely overwrite the website with a lock screen
+                document.body.innerHTML = `
+                    <div style="height: 100vh; width: 100vw; background-color: #050505; color: #C5A059; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'Cinzel', serif; text-align: center; padding: 20px; z-index: 999999; position: fixed; top: 0; left: 0;">
+                        <i class="fa-solid fa-lock" style="font-size: 4rem; margin-bottom: 20px; color: #E63946;"></i>
+                        <h1 style="font-size: 2.5rem; font-weight: 900; letter-spacing: 2px; margin-bottom: 10px;">SYSTEM SUSPENDED</h1>
+                        <p style="font-family: 'Inter', sans-serif; color: #888; font-size: 1rem; max-width: 500px; margin-bottom: 30px;">The operational license for this network node has expired or has been revoked by the master administrator.</p>
+                        <div style="padding: 15px 30px; border: 1px solid #C5A059; color: #C5A059; font-size: 0.8rem; letter-spacing: 2px; background: rgba(197, 160, 89, 0.05);">ERROR CODE: 403-LICENSE-REVOKED</div>
+                    </div>
+                `;
+                document.body.style.overflow = 'hidden';
+            }
+        });
+
+        // 1. Fetch Branding
+        onValue(ref(db, 'cms/global'), (snap) => {
+            const d = snap.val(); if(!d) return;
+            if(d.logoName) document.getElementById('dyn-logo-name').innerText = d.logoName;
+            if(d.logoSub) document.getElementById('dyn-logo-sub').innerText = d.logoSub;
+            if(d.tickerText) document.getElementById('dyn-ticker').innerHTML = `<i class='fa-solid fa-gem mr-3'></i> ${d.tickerText}`;
+            if(d.heroHeading) document.getElementById('dyn-hero-heading').innerHTML = d.heroHeading;
+            if(d.heroSub) document.getElementById('dyn-hero-sub').innerText = d.heroSub;
+            if(d.aboutText) {
+                const paras = d.aboutText.split('\n').filter(p => p.trim() !== '');
+                document.getElementById('dyn-about-text').innerHTML = paras.map(p => `<p>${p}</p>`).join('');
+            }
+            if(d.waNumber) supportNum = d.waNumber;
+        });
+
+        // 2. Fetch Rates Logic
+        onValue(ref(db, 'cms/categories'), (snap) => {
+            const data = snap.val();
+            const tabBox = document.getElementById('dynamic-tabs');
+            const planBox = document.getElementById('dynamic-plans-container');
+            
+            if(!data) { planBox.innerHTML = "<p class='col-span-full text-gray-500'>Initializing server nodes...</p>"; return; }
+
+            tabBox.innerHTML = ''; planBox.innerHTML = '';
+            let isFirstActive = true;
+            let hasAtLeastOne = false;
+
+            Object.entries(data).forEach(([catName, catData]) => {
+                const safeId = catName.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+                
+                if(catData.active && catData.plans && Object.keys(catData.plans).length > 0) {
+                    hasAtLeastOne = true;
+                    tabBox.innerHTML += `<button class="tab-btn ${isFirstActive ? 'active' : ''}" onclick="switchCat('${safeId}', this)">${catName}</button>`;
+                    
+                    let grid = `<div id="${safeId}" class="plan-grid-wrap col-span-full grid md:grid-cols-3 gap-8" style="display: ${isFirstActive ? 'grid' : 'none'};">`;
+                    Object.values(catData.plans).forEach(p => {
+                        grid += `
+                            <div class="plan-card">
+                                <h4 class="text-[10px] text-gray-500 uppercase tracking-[3px] mb-4">Network Requirement</h4>
+                                <div class="plan-limit royal-text">${p.limit}</div>
+                                <div class="w-12 h-[1px] bg-yellow-600/40 mx-auto my-6"></div>
+                                <div class="plan-rate royal-text text-gradient">$${parseFloat(p.rate).toFixed(2)}</div>
+                                <button onclick="openContact()" class="w-full py-3 mt-8 border border-yellow-600/30 text-gold text-xs font-bold royal-text uppercase hover:bg-yellow-600 hover:text-black transition">Deploy Now</button>
+                            </div>
+                        `;
+                    });
+                    grid += `</div>`;
+                    planBox.innerHTML += grid;
+                    isFirstActive = false;
+                }
+            });
+
+            if(!hasAtLeastOne) planBox.innerHTML = "<p class='col-span-full text-center text-gray-600'>No active market rates at this moment.</p>";
+        });
+
+        window.switchCat = (id, el) => {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.plan-grid-wrap').forEach(g => g.style.display = 'none');
+            el.classList.add('active'); document.getElementById(id).style.display = 'grid';
+        };
+
+        window.openContact = () => {
+            if(supportNum) window.open(`https://wa.me/${supportNum}?text=Hello Mr$Sponzify Team, I am inquiring about asset deployment.`, '_blank');
+            else Swal.fire({ title: 'Offline', text: 'System updates in progress.', icon: 'info', background: '#0F0F0F', color: '#FFF' });
+        };
+
+        window.toggleFaq = (el) => {
+            document.querySelectorAll('.faq-item').forEach(i => { if(i !== el) i.classList.remove('active'); });
+            el.classList.toggle('active');
+            const icon = el.querySelector('i');
+            icon.className = el.classList.contains('active') ? 'fa-solid fa-minus' : 'fa-solid fa-plus';
+        };
+
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('main-nav');
+            nav.style.padding = window.scrollY > 50 ? '10px 5%' : '20px 5%';
+            nav.style.backgroundColor = window.scrollY > 50 ? 'rgba(0,0,0,0.95)' : 'rgba(5,5,5,0.8)';
+        });
+    </script>
+</body>
+</html>
